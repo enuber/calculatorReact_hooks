@@ -1,0 +1,32 @@
+*,
+*::after,
+*::before {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 62.5%;
+    font-family: 'Open Sans', sans-serif;
+}
+body {
+    background: #ddd;
+    font-family: inherit;
+}
+
+.app {
+    left: 50%;
+    max-width: 350px;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+
+    /*align-items: center;*/
+
+    /*display: flex;*/
+    /*height: 100vh;*/
+    /*justify-content: center;*/
+    /*width: 100%;*/
+}

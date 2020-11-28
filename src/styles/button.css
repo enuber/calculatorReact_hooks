@@ -1,0 +1,28 @@
+.btn {
+    align-items: center;
+    background-color: #ddd;
+    border: 1px solid #aaa;
+    display: inline-block;
+    font-family: inherit;
+    font-size: 3rem;
+    height: 75px;
+    justify-content: center;
+    outline: none;
+    transition: all .2s;
+    width: 25%;
+}
+.btn:hover {
+    background-color: #ccc;
+}
+.btn:active {
+    transform: scale(.95);
+}
+.btnLarge {
+    width: 50%;
+}
+.btnOrange {
+    background-color: orange;
+}
+.btnOrange:hover {
+    background-color: darkorange;
+}

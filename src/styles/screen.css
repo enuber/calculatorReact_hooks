@@ -1,0 +1,8 @@
+.screen {
+    color: #EEE;
+    height: 100px;
+    overflow: hidden;
+    padding: 0 2rem;
+    white-space: nowrap;
+    width: 100%;
+}

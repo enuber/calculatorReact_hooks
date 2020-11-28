@@ -1,0 +1,7 @@
+.computationScreen {
+    align-items: flex-end;
+    display: flex;
+    font-size: 2.5rem;
+    height: 6vh;
+    justify-content: flex-end;
+}
