@@ -1,5 +1,5 @@
 import '../styles/calculator.css';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Screen from './screen/Screen';
 import Keypad from './keypad/Keypad';
 
@@ -12,60 +12,42 @@ const CalcOperations = {
     '=' : (previousValue, nextValue) => nextValue
 };
 
-class Calculator extends React.Component {
+const Calculator = () => {
 
-    state = {
-        value: null,
-        displayValue: '0',
-        operator: null,
-        waitingForNumber: false
-    };
+    const [value, setValue] = useState(null);
+    const [displayValue, setDisplayValue] = useState('0');
+    const [operator, setOperator] = useState(null);
+    const [waitingForNumber, setWaitingForNumber] = useState(false);
 
-    //using component did update to fix the display value if the number on screen gets to be to large.
-    //componentDidUpdate is perfect for this as it constantly keeps track of state.
-    componentDidUpdate(prevProps, prevState) {
-        if (prevState.displayValue !== this.state.displayValue) {
-            let { displayValue } = this.state;
-            displayValue = String(displayValue);
-            //makes sure that if infinity is displayed that more digits don't appear
-            if (displayValue.indexOf('Infinity') !== -1) {
-                displayValue = 'Infinity';
-            }
-            if (displayValue.length > 10) {
-                displayValue = parseFloat(displayValue).toPrecision(10);
-            }
-            this.setState({
-                displayValue
-            })
+    //using a useEffect to watch the displayValue if the number on screen gets to be to large.
+    //or if it ever equals infinity so you can't add numbers ot infinity
+    useEffect(()=>{
+        if (displayValue.indexOf('Infinity') !== -1) {
+            setDisplayValue('Infinity');
         }
-    }
+        if (displayValue.length > 10) {
+            setDisplayValue(parseFloat(displayValue).toPrecision(10));
+        }
+    },[displayValue]);
 
-    clearAll = () => {
-        this.setState({
-            value: null,
-            displayValue: '0',
-            operator: null,
-            waitingForNumber: false
-        })
+    const clearAll = () => {
+        setValue(null);
+        setDisplayValue('0');
+        setOperator(null);
+        setWaitingForNumber(false);
     };
 
-    clearDisplay = () => {
-        this.setState({
-            displayValue: '0'
-        })
+    const clearDisplay = () => {
+        setDisplayValue('0');
     };
 
-    toggleSign = () => {
-        const { displayValue } = this.state;
+    const toggleSign = () => {
         let oppositeValue = parseFloat(displayValue) * -1;
         oppositeValue = String(oppositeValue);
-        this.setState({
-            displayValue: oppositeValue
-        })
+        setDisplayValue(oppositeValue);
     };
 
-    percentInput = () => {
-        const { displayValue, operator, value } = this.state;
+    const percentInput = () => {
         const currentValue = parseFloat(displayValue);
         let updatedValue;
         if (currentValue === 0) {
@@ -74,88 +56,66 @@ class Calculator extends React.Component {
         if (operator !== '+' && operator !== '-') {
             updatedValue = parseFloat(displayValue) / 100
         } else {
-            updatedValue = (displayValue / 100) * value;
+            updatedValue = (displayValue / 100) * {value};
         }
         updatedValue = String(updatedValue);
-        this.setState({
-            displayValue : updatedValue
-        })
+        setDisplayValue(updatedValue);
     };
 
-    decimalInput = () => {
-        const { value, displayValue, waitingForNumber } = this.state;
+    const decimalInput = () => {
         //check first to see if value is not equal to display value as in this case value starts at null. If they aren't equal
         //we check to see if a decimal already exists. if it doesn't we are then adding in a decimal
-        debugger;
         if (value !== parseFloat(displayValue)  && displayValue.indexOf('.') === -1) {
-            this.setState({
-                displayValue: displayValue + '.',
-                waitingForNumber: false
-            })
+            setDisplayValue(`${displayValue}.`);
+            setWaitingForNumber(false);
         //if value is equal to the display value and we are waiting for the second number to be entered, we need to start it off with
         //a "0." because the decimal was clicked before a number.
         } else if ((value === parseFloat(displayValue) && waitingForNumber)) {
-            this.setState({
-                displayValue: '0.',
-                waitingForNumber: false
-            })
+            setDisplayValue(`0.`);
+            setWaitingForNumber(false);
         }
     };
 
-    digitInput = number => {
-        const { displayValue, waitingForNumber } = this.state;
+    const digitInput = number => {
         if(waitingForNumber) {
-            this.setState({
-                displayValue: String(number),
-                waitingForNumber: false
-            })
+            setDisplayValue(String(number));
+            setWaitingForNumber(false);
         } else {
-            this.setState({
-                displayValue: displayValue === '0' ? String(number) : displayValue + number
-            })
+            setDisplayValue(displayValue === '0' ? String(number) : displayValue + number);
         }
     };
 
-    doMath = nextOperator => {
-        const { value, displayValue, operator, waitingForNumber} = this.state;
+    const doMath = nextOperator => {
         const inputValue = parseFloat(displayValue);
         if (value == null) {
-            this.setState({
-                value: inputValue
-            })
+            setValue(inputValue);
         } else if (operator && !waitingForNumber) {
             const currentValue = value || 0;
             const newValue = CalcOperations[operator](currentValue, inputValue);
-            this.setState({
-                value: newValue,
-                displayValue: String(newValue)
-            })
+            setValue(newValue);
+            setDisplayValue(String(newValue));
         }
-        this.setState({
-            waitingForNumber: true,
-            operator: nextOperator
-        })
+        setWaitingForNumber(true);
+        setOperator(nextOperator);
     };
 
-    render() {
-        return (
-            <main className="calculator">
-                <Screen
-                    result={this.state.displayValue}
-                />
-                <Keypad
-                    clearAll = {this.clearAll}
-                    clearDisplay = {this.clearDisplay}
-                    toggleSign = {this.toggleSign}
-                    percentInput = {this.percentInput}
-                    decimalInput = {this.decimalInput}
-                    digitInput = {this.digitInput}
-                    doMath = {this.doMath}
-                    displayValue = {this.state.displayValue}
-                />
-            </main>
-        );
-    }
-}
+    return (
+        <main className="calculator">
+            <Screen
+                result={displayValue}
+            />
+            <Keypad
+                clearAll = {clearAll}
+                clearDisplay = {clearDisplay}
+                toggleSign = {toggleSign}
+                percentInput = {percentInput}
+                decimalInput = {decimalInput}
+                digitInput = {digitInput}
+                doMath = {doMath}
+                displayValue = {displayValue}
+            />
+        </main>
+    );
+};
 
 export default Calculator;

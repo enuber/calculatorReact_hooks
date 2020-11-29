@@ -1,7 +1,7 @@
 import '../styles/button.css';
 import React from 'react';
 
-const button = (props) => {
+const button = props => {
     const setClass = ['btn'];
 
     if (typeof props !== 'undefined' && typeof props.type !== 'undefined') {
